@@ -1,9 +1,15 @@
-import example.pepita
+import example.*
 
-describe "group of tests for pepita" {
+describe "group of tests for compra tarjeta de Credito" {
+    const plata = new Efectivo(sePuedeUsar=true)
+    const tarjetaDebito = new Debito (sePuedeUsar=true, saldo = 50000)
+    const TarjetaCredito = new Credito (sePuedeUsar=true, maximoPermitido = 50000, cuotasPorMesTarjeta=2)
+    const tito = new Persona(formaDePago = [plata,tarjetaDebito, TarjetaCredito], dinero = 5000, pagoPreferido=TarjetaCredito,salario = 100000)
+  test "prueba de compra" {
+    tito.comprar(2000)
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
   }
 
+    test "prueba de cobrarSueldo" {
+    tito.renovarSalario()
 }
