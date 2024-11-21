@@ -4,31 +4,49 @@ class Persona {
   var property dinero
   var property salario
   var property salarioDelMes = salario
-
+  var totalCuotasImpagas = 0
+  const cantCosas = []
+  var property mayorComprador
 
   method cambiarPagoPreferida(formPago) {
     pagoPreferido = formPago
   }
 
   method comprar(monto) {
+    if(pagoPreferido.sePuedeUsar()){
     pagoPreferido.hacerLaCompra(self,monto)
+    cantCosas.add("producto") }
+    else 
+    self.error("No se acepta la forma de pago seleccionada")
   }
 
   method aumentarSalario(aumento) {
     salario += aumento
   }
 
-  method terminarMes(cuotaMes) {
+  method terminarMes() {
     self.pagarCuotaDeMes()
     self.cobrarSalario()
   }
 
   method pagarCuotaDeMes() {
-    if (salarioDelMes>= Credito.cuotaMes)
-    salarioDelMes -= Credito.cuotaMes
-    else
-    self.error("La persona no puede pagar la cuota del mes")
+    if (Credito.cuotasPorPagar != 0){
+      if(salario>=Credito.valorCuota) {
+    salarioDelMes -= Credito.valorCuota
+    Credito.restarCuotasPorPagar()
+    }
+    else {
+      self.error("La persona no puede pagar la cuota este mes")
+      totalCuotasImpagas += Credito.valorCuota
+    }
+    }
+    else{
+    self.error("La persona no tiene cuotas que pagar")
+    }
+
   }
+
+  method mostrarTotalCuotasImpagas() = totalCuotasImpagas
 
   method cobrarSalario() {
     dinero += salarioDelMes
@@ -38,9 +56,17 @@ class Persona {
   method gastar(monto) {
     dinero -= monto
   } 
+
+  method PersonaQueMasTiene() {
+  //mayorComprador = cantCosas.max()
+}
 }
 
-object efectivo {
+class FormaDePago {
+  var property sePuedeUsar 
+}
+
+class Efectivo inherits FormaDePago {
   method hacerLaCompra(persona,monto) {
     if (persona.dinero()>=monto){
       persona.gastar(monto)
@@ -48,7 +74,7 @@ object efectivo {
   else self.error("el dinero de la persona no es suficiente")
   }
 }
-class Debito {
+class Debito inherits FormaDePago {
   var property saldo 
   method hacerLaCompra(persona,monto) {
     if (saldo>=monto){
@@ -63,10 +89,11 @@ class Debito {
 }
 
 
-class Credito {
+class Credito inherits FormaDePago {
 var property maximoPermitido
-const cuotasPorMesTarjeta = []
-var cuotaMes = 0
+const cuotasPorMesTarjeta 
+var property cuotasPorPagar
+var valorCuota = 0
 
   method hacerLaCompra(persona,monto) {
     if (maximoPermitido>=monto){
@@ -76,12 +103,62 @@ var cuotaMes = 0
   }
 
   method agregarCuotas(monto) {
-   cuotaMes = monto/cuotasPorMesTarjeta.size() + BancoCentral.interes()
+   valorCuota = monto/cuotasPorMesTarjeta + bancoCentral.interes()
+   cuotasPorPagar = cuotasPorMesTarjeta 
+  }
+
+  method restarCuotasPorPagar() {
+  cuotasPorPagar -= 1
   }
 }
 
-class BancoCentral {
-  var property interes
+object bancoCentral {
+  var interes = 200
   method interes() = interes
+  method cambiarInteres(nuevo) {
+    interes = nuevo 
+  }
 }
+
+class PrestamoSinInteres inherits Credito {
+override method agregarCuotas(monto) {
+   valorCuota = monto/cuotasPorMesTarjeta
+   cuotasPorPagar = cuotasPorMesTarjeta 
+  }
+}
+
+//------------------------- Segunda Parte --------------------------------
+
+class CompradoresCompulsivos inherits Persona {
+  var property formasDePagoDisponible = []
+  override method comprar(monto) {
+    if(pagoPreferido.sePuedeUsar()){
+    pagoPreferido.hacerLaCompra(self,monto)
+    cantCosas.add("producto") }
+    else 
+    //pagoPreferido()
+  }
+}
+
+class PagadoresCompulsivos inherits Persona {
+  override method pagarCuotaDeMes() {
+    if (Credito.cuotasPorPagar != 0){
+    salarioDelMes -= Credito.valorCuota
+    if (salarioDelMes<0 and dinero > -salarioDelMes) {
+      dinero +=salarioDelMes
+    }
+    else {}
+    Credito.restarCuotasPorPagar()
+    }
+    else{
+    self.error("La persona no tiene cuotas que pagar")
+    }
+
+  }
+}
+
+
+
+
+
 
