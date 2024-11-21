@@ -58,12 +58,13 @@ class Persona {
   } 
 
   method PersonaQueMasTiene() {
-  //mayorComprador = cantCosas.max()
+  //mayorComprador = cantCosas.size()
 }
 }
 
 class FormaDePago {
-  var property sePuedeUsar 
+  var property sePuedeUsar
+  method sePuedeUsar() =  sePuedeUsar
 }
 
 class Efectivo inherits FormaDePago {
@@ -135,9 +136,14 @@ class CompradoresCompulsivos inherits Persona {
     if(pagoPreferido.sePuedeUsar()){
     pagoPreferido.hacerLaCompra(self,monto)
     cantCosas.add("producto") }
-    else 
-    //pagoPreferido()
+    if(formasDePagoDisponible.any(n => n.sePuedeUsar())) {
+      pagoPreferido = formasDePagoDisponible.find(n => n.sePuedeUsar())}
+    }
+     else {
+    self.error("No se acepta la forma de pago seleccionada")
   }
+
+  
 }
 
 class PagadoresCompulsivos inherits Persona {
@@ -147,7 +153,9 @@ class PagadoresCompulsivos inherits Persona {
     if (salarioDelMes<0 and dinero > -salarioDelMes) {
       dinero +=salarioDelMes
     }
-    else {}
+    else {
+      self.error("no puede pagar la cuota con el dinero que tiene")
+    }
     Credito.restarCuotasPorPagar()
     }
     else{
@@ -156,6 +164,7 @@ class PagadoresCompulsivos inherits Persona {
 
   }
 }
+
 
 
 
