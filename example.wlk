@@ -6,7 +6,7 @@ class Persona {
   var property salarioDelMes = salario
   var totalCuotasImpagas = 0
   const cantCosas = []
-  var property mayorComprador
+ // var property mayorComprador
 
   method cambiarPagoPreferida(formPago) {
     pagoPreferido = formPago
@@ -50,8 +50,10 @@ class Persona {
 
   method cobrarSalario() {
     dinero += salarioDelMes
-    salarioDelMes = salario
+    self.renovarSalario()
   }
+
+  method renovarSalario() { salarioDelMes = salario}
 
   method gastar(monto) {
     dinero -= monto
@@ -91,9 +93,9 @@ class Debito inherits FormaDePago {
 
 
 class Credito inherits FormaDePago {
-var property maximoPermitido
+const property maximoPermitido
 const cuotasPorMesTarjeta 
-var property cuotasPorPagar
+var property cuotasPorPagar = cuotasPorMesTarjeta
 var valorCuota = 0
 
   method hacerLaCompra(persona,monto) {
